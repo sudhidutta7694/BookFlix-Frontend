@@ -1,0 +1,232 @@
+{
+    "states": [
+      {
+        "name": "Andhra Pradesh",
+        "languages": [
+          {"name": "Telugu", "code": "te"},
+          {"name": "English", "code": "en"}
+        ]
+      },
+      {
+        "name": "Arunachal Pradesh",
+        "languages": [
+          {"name": "English", "code": "en"},
+          {"name": "Hindi", "code": "hi"},
+          {"name": "Assamese", "code": "as"}
+        ]
+      },
+      {
+        "name": "Assam",
+        "languages": [
+          {"name": "Assamese", "code": "as"},
+          {"name": "English", "code": "en"},
+          {"name": "Bengali", "code": "bn"},
+          {"name": "Hindi", "code": "hi"}
+        ]
+      },
+      {
+        "name": "Bihar",
+        "languages": [
+          {"name": "Hindi", "code": "hi"},
+          {"name": "Maithili", "code": "mai"},
+          {"name": "Bhojpuri", "code": "bho"},
+          {"name": "Magahi", "code": "mag"},
+          {"name": "English", "code": "en"}
+        ]
+      },
+      {
+        "name": "Chhattisgarh",
+        "languages": [
+          {"name": "Hindi", "code": "hi"},
+          {"name": "Chhattisgarhi", "code": "hne"},
+          {"name": "Gondi", "code": "ggo"},
+          {"name": "English", "code": "en"}
+        ]
+      },
+      {
+        "name": "Goa",
+        "languages": [
+          {"name": "Konkani", "code": "kok"},
+          {"name": "Marathi", "code": "mr"},
+          {"name": "English", "code": "en"}
+        ]
+      },
+      {
+        "name": "Gujarat",
+        "languages": [
+          {"name": "Gujarati", "code": "gu"},
+          {"name": "Hindi", "code": "hi"},
+          {"name": "English", "code": "en"}
+        ]
+      },
+      {
+        "name": "Haryana",
+        "languages": [
+          {"name": "Hindi", "code": "hi"},
+          {"name": "Haryanvi", "code": "bgc"},
+          {"name": "English", "code": "en"}
+        ]
+      },
+      {
+        "name": "Himachal Pradesh",
+        "languages": [
+          {"name": "Hindi", "code": "hi"},
+          {"name": "Pahari", "code": "mjt"},
+          {"name": "Kangri", "code": "xnr"},
+          {"name": "English", "code": "en"}
+        ]
+      },
+      {
+        "name": "Jharkhand",
+        "languages": [
+          {"name": "Hindi", "code": "hi"},
+          {"name": "Santhali", "code": "sat"},
+          {"name": "Bengali", "code": "bn"},
+          {"name": "English", "code": "en"}
+        ]
+      },
+      {
+        "name": "Karnataka",
+        "languages": [
+          {"name": "Kannada", "code": "kn"},
+          {"name": "English", "code": "en"}
+        ]
+      },
+      {
+        "name": "Kerala",
+        "languages": [
+          {"name": "Malayalam", "code": "ml"},
+          {"name": "English", "code": "en"}
+        ]
+      },
+      {
+        "name": "Madhya Pradesh",
+        "languages": [
+          {"name": "Hindi", "code": "hi"},
+          {"name": "English", "code": "en"},
+          {"name": "Bundeli", "code": "bns"},
+          {"name": "Chhattisgarhi", "code": "hne"}
+        ]
+      },
+      {
+        "name": "Maharashtra",
+        "languages": [
+          {"name": "Marathi", "code": "mr"},
+          {"name": "Hindi", "code": "hi"},
+          {"name": "English", "code": "en"}
+        ]
+      },
+      {
+        "name": "Manipur",
+        "languages": [
+          {"name": "Meitei", "code": "mni"},
+          {"name": "English", "code": "en"}
+        ]
+      },
+      {
+        "name": "Meghalaya",
+        "languages": [
+          {"name": "Khasi", "code": "kha"},
+          {"name": "English", "code": "en"}
+        ]
+      },
+      {
+        "name": "Mizoram",
+        "languages": [
+          {"name": "Mizo", "code": "lus"},
+          {"name": "English", "code": "en"}
+        ]
+      },
+      {
+        "name": "Nagaland",
+        "languages": [
+          {"name": "English", "code": "en"},
+          {"name": "Ao", "code": "njo"},
+          {"name": "Konyak", "code": "knn"},
+          {"name": "Lotha", "code": "njh"}
+        ]
+      },
+      {
+        "name": "Odisha",
+        "languages": [
+          {"name": "Odia", "code": "or"},
+          {"name": "Santali", "code": "sat"},
+          {"name": "English", "code": "en"}
+        ]
+      },
+      {
+        "name": "Punjab",
+        "languages": [
+          {"name": "Punjabi", "code": "pa"},
+          {"name": "Hindi", "code": "hi"},
+          {"name": "English", "code": "en"}
+        ]
+      },
+      {
+        "name": "Rajasthan",
+        "languages": [
+          {"name": "Hindi", "code": "hi"},
+          {"name": "Rajasthani", "code": "raj"},
+          {"name": "English", "code": "en"}
+        ]
+      },
+      {
+        "name": "Sikkim",
+        "languages": [
+          {"name": "Nepali", "code": "ne"},
+          {"name": "Bhutia", "code": "dzo"},
+          {"name": "English", "code": "en"}
+        ]
+      },
+      {
+        "name": "Tamil Nadu",
+        "languages": [
+          {"name": "Tamil", "code": "ta"},
+          {"name": "English", "code": "en"}
+        ]
+      },
+      {
+        "name": "Telangana",
+        "languages": [
+          {"name": "Telugu", "code": "te"},
+          {"name": "Urdu", "code": "ur"},
+          {"name": "English", "code": "en"}
+        ]
+      },
+      {
+        "name": "Tripura",
+        "languages": [
+          {"name": "Bengali", "code": "bn"},
+          {"name": "Kokborok", "code": "trp"},
+          {"name": "English", "code": "en"}
+        ]
+      },
+      {
+        "name": "Uttar Pradesh",
+        "languages": [
+          {"name": "Hindi", "code": "hi"},
+          {"name": "Bhojpuri", "code": "bho"},
+          {"name": "Urdu", "code": "ur"},
+          {"name": "English", "code": "en"}
+        ]
+      },
+      {
+        "name": "Uttarakhand",
+        "languages": [
+          {"name": "Hindi", "code": "hi"},
+          {"name": "Garhwali", "code": "gbm"},
+          {"name": "Kumaoni", "code": "kfy"},
+          {"name": "English", "code": "en"}
+        ]
+      },
+      {
+        "name": "West Bengal",
+        "languages": [
+          {"name": "Bengali", "code": "bn"},
+          {"name": "Hindi", "code": "hi"},
+          {"name": "English", "code": "en"}
+        ]
+      }
+    ]
+  }
+  
