@@ -48,3 +48,9 @@ nodemon server.js
 ```sh
 npm run lint
 ```
+
+### Build and Run DockerFile (Stripe Not Supported)
+
+```sh
+docker compose up 
+```
