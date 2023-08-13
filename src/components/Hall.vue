@@ -132,7 +132,7 @@ const props = defineProps({
         required: true,
     },
 });
-const isFirebase = localStorage.getItem("user").startsWith("{");
+const isFirebase = ref(localStorage.getItem("user").startsWith("{"));
 const bookedSeats = ref([])
 const selectedOption = ref('1');
 const selectedSeats = ref([]);
@@ -236,7 +236,7 @@ const handlePayment = () => {
     }).then(res => {
         if (res.ok) return res.json();
         return res.json().then(json => Promise.reject(json));
-    }).then(({ url }) => {
+    }).then(({ url, id, session }) => {
         // window.open(url, '_blank');
         // console.log(selectedSeats.value)
         const stripedUrl = url.replace('http://localhost:3000.app', '');
@@ -255,6 +255,12 @@ const handlePayment = () => {
         setTimeout(() => {
             window.location.href = stripedUrl;
         }, 1000);
+        // setTimeout(() => {
+        //     // window.location.href = stripedUrl;
+        //     // alert("The payment ID is: " + id);
+        // }, 5000);
+        console.log("The payment ID is: " + id + "\n\n" + session);
+
 
     }).catch(err => {
         console.log(payment.value)

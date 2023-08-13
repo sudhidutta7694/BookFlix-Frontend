@@ -123,8 +123,8 @@ export default {
 
         for (const language of this.languages) {
           const currentDate = new Date();
-          const curent = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, currentDate.getDate());
-          const formattedDate = curent.toISOString().split('T')[0];
+          const current = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - 7);
+          const formattedDate = current.toISOString().split('T')[0];
 
           const response = await axios.get('https://api.themoviedb.org/3/discover/movie', {
             params: {
