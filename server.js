@@ -53,7 +53,7 @@ async function sendEmailWithPDF(items, recipientEmail) {
 
       if (item.imageUrl && imagePaths[i]) {
          const x = (pdfWidth) / 2;
-         doc.image(imagePaths[i], x , doc.y, { width: 150, height: 200 }, { align: 'center' });
+         doc.image(imagePaths[i], x, doc.y, { width: 150, height: 200 }, { align: 'center' });
       }
       doc.moveDown();
       doc.fontSize(14).text(`${item.numTickets} ticket(s) for ${item.movieName}`, { align: 'center' });
@@ -169,7 +169,7 @@ async function sendEmailWithPDF(items, recipientEmail) {
 // Call the function
 //  sendEmailWithPDF(itemsArray, 'recipient@example.com');
 
-
+let itemsForEmail;
 // Inside your app.post('/create-checkout-session') route
 app.post('/create-checkout-session', async (req, res) => {
    try {
@@ -195,17 +195,32 @@ app.post('/create-checkout-session', async (req, res) => {
       });
 
       // const paymentIntentId = session.payment_intent;
-
+      itemsForEmail = req.body.items.map(item => ({ ...item }));
+      console.log(itemsForEmail);
       // Generate the PDF and send the email with PDF attachment
-      req.body.items.forEach(item => {
-         sendEmailWithPDF([item], item.email);
-      });
+      // req.body.items.forEach(item => {
+      //    sendEmailWithPDF([item], item.email);
+      // });
 
       res.json({ url: session.url, id: session.id, session: JSON.stringify(session) });
    } catch (err) {
       res.status(500).json({ error: err.message });
    }
 });
+
+app.post('/send-email', async (req, res) => {
+   const { email } = req.body;
+   const items = itemsForEmail;
+
+   // Call the sendEmailWithPDF function from your existing server code
+   try {
+      await sendEmailWithPDF(items, email);
+      res.json({ message: 'Email sent successfully' });
+   } catch (error) {
+      res.status(500).json({ error: 'Error sending email' });
+   }
+});
+
 
 // Serve the built Vue app from the 'dist' directory
 app.use(express.static(path.join(__dirname, 'dist')));

@@ -129,6 +129,19 @@ const router = createRouter({
       name: 'paySuccess',
       component: paySuccess,
       meta: { requiresAuth: true, fromUI: true },
+      // beforeEnter: (to, from, next) => {
+      //   // Check if paymentID is stored in localStorage
+      //   const paymentID = localStorage.getItem('paymentID');
+        
+      //   // Delay the navigation to another route after 1 second if paymentID is not found
+      //   if (!paymentID) {
+      //     setTimeout(() => {
+      //       next('/home');
+      //     }, 10000);
+      //   } else {
+      //     next();
+      //   }
+      // },
     },
     {
       path: '/payFailure',

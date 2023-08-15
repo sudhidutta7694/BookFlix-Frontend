@@ -16,13 +16,12 @@
           <th class="min-w-[200px]">Day</th>
           <th class="min-w-[200px]">Date</th>
           <th class="min-w-[200px]">Token</th>
+          <th class="min-w-[200px]">Receipt</th>
           <!-- <th>Booking Status</th> -->
         </tr>
       </thead>
       <tbody class="rounded-b-xl overflow-y-auto h-72">
         <tr class="text-green-100 bg-slate-600 font-mono text-lg" v-for="booking in sortedBookings" :key="booking.token">
-          <!-- :class="(((new Date(booking.date).getUTCMonth()) > (new Date().getUTCMonth())) || (((new Date(booking.date).getUTCMonth()) == (new Date().getUTCMonth())) && ((new Date(booking.date).getDate()) > (new Date().getDate()))) || (((new Date(booking.date).getUTCMonth()) == (new Date().getUTCMonth())) && ((new Date(booking.date).getDate()) == (new Date().getDate())) && ((new Date(booking.date).getTime()) >= (new Date().getTime())))) ? 'text-red-200' : 'text-green-200'"  -->
-          <!-- <td>{{ booking.city }}</td> -->
           <td class="min-w-[200px]">{{ booking.language }}</td>
           <td class="min-w-[200px]">{{ booking.movie }}</td>
           <td class="min-w-[200px]">{{ booking.payment }}</td>
@@ -35,9 +34,10 @@
           <td class="min-w-[200px]">{{ booking.theater.day }}</td>
           <td class="min-w-[200px]">{{ booking.date }}</td>
           <td class="min-w-[200px]">{{ booking.token }}</td>
-          <!-- <td class="font-mono font-bold">
-          {{ (((new Date(booking.date).getUTCMonth()) > (new Date().getUTCMonth())) || (((new Date(booking.date).getUTCMonth()) == (new Date().getUTCMonth())) && ((new Date(booking.date).getDate()) > (new Date().getDate()))) || (((new Date(booking.date).getUTCMonth()) == (new Date().getUTCMonth())) && ((new Date(booking.date).getDate()) == (new Date().getDate())) && ((new Date(booking.date).getTime()) >= (new Date().getTime())))) ? 'Expired' : 'Active' }} 
-        </td> -->
+          <td class="min-w-[200px]"><button @click="generateAndDownloadInvoice(booking)"
+              class="bg-red-700 px-3 py-2 font-mono text-center text-white text-lg rounded-lg hover:bg-red-600">
+              Download
+            </button></td>
         </tr>
       </tbody>
     </table>
@@ -46,6 +46,8 @@
 
 
 <script>
+// import PDFDocument from 'pdfkit';
+
 export default {
   props: {
     bookingData: {
@@ -73,8 +75,26 @@ export default {
 
       // Return the seats as a comma-separated string
       return formattedSeats.join(', ');
-    }
-  }
+    },
+    async generateAndDownloadInvoice(booking) {
+      const pdfBlob = await fetch('http://localhost:5173/generate-pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ data: booking }),
+      }).then(response => response.blob());
+
+      const fileName = `invoice_${booking.token}.pdf`;
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      const a = document.createElement('a');
+      a.href = pdfUrl;
+      a.download = fileName;
+      a.click();
+
+      URL.revokeObjectURL(pdfUrl); // Clean up the URL object
+    },
+  },
 };
 </script>
 
@@ -84,6 +104,7 @@ export default {
   width: 80vw;
   height: 300px;
 }
+
 .table {
   /* width: 100%; */
   /* border-collapse: collapse; */

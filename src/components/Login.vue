@@ -6,7 +6,9 @@
       <div class="sm:w-10/12 md:w-8/12 lg:w-6/12 xl:w-5/12 mx-auto transition-all ease-in duration-300">
         <div
           class="box backdrop-blur backdrop-brightness-50 opacity-90 hover:opacity-100 p-6 md:px-12 md:pt-12 border-t-10 border-solid border-red-700 transition-all ease-in duration-300">
-          <h2 class="text-3xl color text-center">Login</h2>
+          <h2 v-if="!showForgotPasswordSection" class="text-3xl color text-center">Login</h2>
+
+          <h2 v-else class="text-3xl color text-center">Reset Password</h2>
 
           <form @submit.prevent="handleLogin" class="login-form mt-6 md:mt-12">
             <div v-if="!showForgotPasswordSection" class="border-2 border-solid rounded flex items-center mb-4">
@@ -33,7 +35,8 @@
               </button>
             </div>
 
-            <div v-if="showForgotPasswordSection" class="border-2 border-solid rounded flex items-center mb-4">
+            <div v-if="showForgotPasswordSection && !(showOTP)"
+              class="border-2 border-solid rounded flex items-center mb-4">
               <div class="w-10 h-10 flex justify-center items-center flex-shrink-0">
                 <span class="fas fa-question-circle color"></span>
               </div>
@@ -43,14 +46,70 @@
               </div>
             </div>
 
+            <div v-if="showForgotPasswordSection && showOTP && !verifiedOTP"
+              class="border-2 border-solid rounded flex items-center mb-4">
+              <div class="w-10 h-10 flex justify-center items-center flex-shrink-0">
+                <span class="fas fa-question-circle color"></span>
+              </div>
+              <div class="flex-1">
+                <input v-model="OTP" placeholder="Enter your OTP"
+                  class="p-4 h-10 colour text-red-700 font-mono font-semibold py-1 pr-3 w-full" />
+              </div>
+            </div>
+
+            <div v-if="verifiedOTP" class="border-2 border-solid rounded flex items-center mb-4">
+              <div class="w-10 h-10 flex justify-center items-center flex-shrink-0">
+                <span class="fas fa-asterisk color"></span>
+              </div>
+              <div class="flex-1">
+                <input v-model="newPassword" placeholder="Enter your Password" :type="showPassword ? 'text' : 'password'"
+                  class="p-4 h-10 colour text-red-700 font-mono font-semibold py-1 pr-3 w-full"
+                  pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$" required />
+              </div>
+              <button type="button" class="eye-button color" @click="showPassword = !showPassword">
+                <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+              </button>
+            </div>
+
+            <div v-if="verifiedOTP" class="border-2 border-solid rounded flex items-center mb-4">
+              <div class="w-10 h-10 flex justify-center items-center flex-shrink-0">
+                <span class="fas fa-asterisk color"></span>
+              </div>
+              <div class="flex-1">
+                <input v-model="confirmNewPassword" placeholder="Enter your Password"
+                  :type="showPassword ? 'text' : 'password'"
+                  class="p-4 h-10 colour text-red-700 font-mono font-semibold py-1 pr-3 w-full"
+                  pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$" required />
+              </div>
+              <button type="button" class="eye-button color" @click="showPassword = !showPassword">
+                <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+              </button>
+            </div>
+
             <p v-if="!showForgotPasswordSection" class="text-sm text-center color mt-6">
               <a href="#" class="text-red-600 hover:underline" @click="toggleForgotPasswordSection">Forgot Password?</a>
             </p>
 
-            <div v-if="showForgotPasswordSection" class="text-center mt-6">
+            <div v-if="showForgotPasswordSection && !(showOTP)" class="text-center mt-6">
               <button type="button"
                 class="bg-red-700 hover:bg-red-800 color text-xl py-2 px-4 md:px-6 rounded transition-colors duration-300"
-                @click="handleForgotPassword">
+                @click="sendResetLink">
+                Send OTP<span class="fas fa-key ml-2 color"></span>
+              </button>
+            </div>
+
+            <div v-if="showForgotPasswordSection && showOTP && !(verifiedOTP)" class="text-center mt-6">
+              <button type="button"
+                class="bg-red-700 hover:bg-red-800 color text-xl py-2 px-4 md:px-6 rounded transition-colors duration-300"
+                @click="verifyOTP">
+                Verify OTP<span class="fas fa-key ml-2 color"></span>
+              </button>
+            </div>
+
+            <div v-if="showForgotPasswordSection && (showOTP) && verifiedOTP" class="text-center mt-6">
+              <button type="button"
+                class="bg-red-700 hover:bg-red-800 color text-xl py-2 px-4 md:px-6 rounded transition-colors duration-300"
+                @click="resetPassword">
                 Reset Password<span class="fas fa-key ml-2 color"></span>
               </button>
             </div>
@@ -88,8 +147,9 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { collection, setDoc, getDoc, doc, getFirestore } from 'firebase/firestore';
 import { app } from '@/firebase'; // Assuming you have already set up Firebase in your project
-import { GoogleAuthProvider, signInWithPopup, getAuth, sendPasswordResetEmail } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithPopup, getAuth } from 'firebase/auth';
 import Swal from 'sweetalert2';
+// import { forgotPassword } from '@/services/api';
 // import { useStore } from '@/store';
 
 export default {
@@ -103,48 +163,166 @@ export default {
     const password = ref('');
     const router = useRouter();
     // const store = useStore();
+    const showOTP = ref(false);
+    const OTP = ref(null);
     const showForgotPasswordSection = ref(false);
     const forgotEmail = ref('');
     const auth = getAuth(app)
+    const newPassword = ref('');
+    const confirmNewPassword = ref('');
+    const verifiedOTP = ref(false);
 
+    const verifyOTP = async () => {
+      try {
+        const response = await fetch('http://localhost:5173/verify-otp', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            token: OTP.value,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          console.log(data.message);
+          verifiedOTP.value = true;
+           Swal.fire({
+            title: 'OTP Verification Successful',
+            text: data.message,
+            icon: 'success',
+          });
+          // Set a variable or state indicating that OTP is verified
+          // Redirect to the reset password page or show a new form
+        } else {
+          console.log(data.message);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        Swal.fire({
+          title: 'An error occurred',
+          html: 'Invalid OTP',
+          icon: 'error',
+        })
+      }
+    }
+
+
+    const resetPassword = async () => {
+      try {
+        if (newPassword.value == confirmNewPassword.value) {
+          const response = await fetch('http://localhost:5173/reset-password', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              // token: OTP.value,
+              newPassword: newPassword.value,
+            }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message);
+          }
+
+          const data = await response.json();
+          // alert(data.message);
+          Swal.fire({
+            title: data.message,
+            // text: ,
+            icon: 'success',
+          });
+          showForgotPasswordSection.value = false;
+          verifiedOTP.value = false;
+          showOTP.value = false;
+        } else {
+          Swal.fire({
+            title: 'An error occurred',
+            html: 'Password and confirm password must be same',
+            icon: 'error',
+          })
+        }
+        // Redirect to login or another page
+      } catch (error) {
+        alert(error.message);
+      }
+    }
     const toggleForgotPasswordSection = () => {
       showForgotPasswordSection.value = !showForgotPasswordSection.value;
     };
-    const handleForgotPassword = async () => {
+    const sendResetLink = async () => {
       try {
-        const auth = getAuth(app);
-        const email = forgotEmail.value;
-
-        // Send the password reset email
-        await sendPasswordResetEmail(auth, email);
-
-        // Password reset email sent successfully
-        const resetLink = 'https://mail.google.com'; // Replace with your actual password reset link
-
-        // Display SweetAlert with a clickable link
-        Swal.fire({
-          title: 'Password Reset Email Sent',
-          html: `Password reset email sent. Please check your inbox. Click <a href="${resetLink}" target="_blank" style="color: blue; text-decoration: underline;">here</a> to reset your password.`,
-          icon: 'success',
+        const response = await fetch('http://localhost:5173/forgot-password', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email: forgotEmail.value }),
         });
 
-        // Clear the input field
-        forgotEmail.value = '';
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message);
+        }
 
-        // Hide the forgot password section
-        showForgotPasswordSection.value = false;
-      } catch (error) {
-        console.error('Error sending password reset email:', error);
-        // alert('Failed to send password reset email. Please try again.');
+        const data = await response.json();
+        console.log(data.message);
+        showOTP.value = true;
         Swal.fire({
-          title: 'Failed to send password reset email.',
-          html: 'Please crosscheck the email',
+            title: 'Password Reset Email Sent',
+            text: data.message,
+            icon: 'success',
+          });
+      } catch (error) {
+        console.log(error.message);
+        Swal.fire({
+          title: 'An error occurred',
+          html: 'The user is not registered',
           icon: 'error',
         })
-
-        forgotEmail.value = '';
       }
     };
+
+    // const handleForgotPassword = () => {
+    //   try {
+    //     // const auth = getAuth(app);
+    //     const email = forgotEmail.value;
+
+    //     // Send the password reset email
+    //     // await sendResetLink(email)
+    //     // await sendPasswordResetEmail(auth, email);
+
+    //     // Password reset email sent successfully
+    //     const resetLink = 'https://mail.google.com'; // Replace with your actual password reset link
+
+    //     // Display SweetAlert with a clickable link
+    //     Swal.fire({
+    //       title: 'Password Reset Email Sent',
+    //       html: `Password reset email sent. Please check your inbox. Click <a href="${resetLink}" target="_blank" style="color: blue; text-decoration: underline;">here</a> to reset your password.`,
+    //       icon: 'success',
+    //     });
+
+    //     // Clear the input field
+    //     forgotEmail.value = '';
+
+    //     // Hide the forgot password section
+    //     showForgotPasswordSection.value = false;
+    //   } catch (error) {
+    //     console.error('Error sending password reset email:', error);
+    //     // alert('Failed to send password reset email. Please try again.');
+    //     Swal.fire({
+    //       title: 'Failed to send password reset email.',
+    //       html: 'Please crosscheck the email',
+    //       icon: 'error',
+    //     })
+
+    //     forgotEmail.value = '';
+    //   }
+    // };
 
 
     // On component mount, check if the username is stored in local storage
@@ -168,15 +346,15 @@ export default {
       })
         .then(async (res) => {
           if (res.ok) {
-            const data = await res.json(); 
+            const data = await res.json();
             // console.log("Response:", data); 
             localStorage.setItem('user', data.userInfo);
             localStorage.setItem('email', data.email);
             localStorage.setItem('access_token', JSON.stringify(data.idToken));
-            return data; 
+            return data;
           } else {
-            const errorData = await res.json(); 
-            console.log("Error Response:", errorData.error); 
+            const errorData = await res.json();
+            console.log("Error Response:", errorData.error);
             if (errorData.error == "No user registered") {
               Swal.fire({
                 title: "User Not Found",
@@ -308,6 +486,7 @@ export default {
     };
 
     return {
+      sendResetLink,
       userInfo,
       password,
       handleLogin,
@@ -315,7 +494,13 @@ export default {
       showForgotPasswordSection,
       forgotEmail,
       toggleForgotPasswordSection,
-      handleForgotPassword,
+      showOTP,
+      OTP,
+      resetPassword,
+      newPassword,
+      confirmNewPassword,
+      verifyOTP,
+      verifiedOTP
     };
   },
 };

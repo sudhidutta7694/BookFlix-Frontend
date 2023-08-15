@@ -1,5 +1,8 @@
 <template>
-    <div class="mt-[-55vh] bg-slate-800 p-6 md:p-12">
+    <div v-if="this.status !== 'succeeded'"
+        class="bg-slate-800 p-6 md:p-12 h-screen flex justify-center items-center text-red-200 text-center">Please pay for
+        booking the seats</div>
+    <div v-else class="mt-[-55vh] bg-slate-800 p-6 md:p-12">
         <div>
             <router-link to="/bookings" class="relative flex justify-center item-center">
                 <button id="bookingButton" :class="{ 'disabled-button': isButtonDisabled }" @click="deleteBookingData"
@@ -42,7 +45,7 @@
 </template>
   
 <script>
-
+import axios from "axios";
 import swal from 'sweetalert2';
 // import { onMounted } from 'vue';
 // import { db } from '@/firebase'
@@ -52,6 +55,7 @@ import { getFirestore, collection, doc, setDoc, getDoc } from 'firebase/firestor
 export default {
     data() {
         return {
+            status: null,
             isButtonDisabled: true,
             isFirebase: localStorage.getItem("user").startsWith("{"),
             bookingData: {
@@ -68,7 +72,36 @@ export default {
         };
     },
     methods: {
+        async fetchPaymentInfo() {
+            try {
+                const response = await fetch('http://localhost:8080/payment'); // Replace with your backend API endpoint
+                const data = await response.json();
+                console.log("The PaymentData is: " + JSON.stringify(data));
+                this.status = data.status;
+                if (data.status == 'succeeded') {
+                    this.sendEmailWithPDF(data.receipt_email);
+                }
+                else {
+                    console.log("The payment has not been received");
+                }
+                // localStorage.setItem('paymentID', data.id);
+                // this.paymentInfo = data;
+                // this.error = null;
+            } catch (error) {
+                this.error = 'Error fetching payment information: ' + error.message;
+                this.paymentInfo = null;
+            }
+        },
+        async sendEmailWithPDF(email) {
+            try {
+                const response = await axios.post('/send-email', {email});
+                console.log('Email sent:', response.data);
+            } catch (error) {
+                console.error('Error sending email:', error);
+            }
+        },
         deleteBookingData() {
+            localStorage.removeItem("paymentID");
             localStorage.removeItem('payment');
             localStorage.removeItem('seatLength');
             localStorage.removeItem('movie');
@@ -187,86 +220,87 @@ export default {
                 state: this.bookingData.state,
                 seats: JSON.parse(localStorage.getItem('selectedSeats')),
             };
-
             try {
-                if (!this.isFirebase) {
-                    const response = await fetch('http://localhost:5173/bookings', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(bookingData),
-                    });
-
-                    const data = await response.json();
-                    if (data.success) {
-                        swal.fire({
-                            title: 'Booking Data Saved Successfully',
-                            text: data.message,
-                            icon: 'success',
+                setTimeout(async () => {
+                    if (!this.isFirebase && (this.status === 'succeeded')) {
+                        const response = await fetch('http://localhost:5173/bookings', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(bookingData),
                         });
-                    } else {
-                        swal.fire({
-                            title: 'Error saving booking data',
-                            text: data.message,
-                            icon: 'error',
-                        });
-                    }
-                } else {
-                    const db = getFirestore(); // Access the Firestore instance
 
-                    if (username) {
-                        console.log(this.bookingData.theater.type);
-                        // Construct the booking data object
-                        const bookingData = {
-                            token: localStorage.getItem('token'),
-                            // date: this.bookingData.date,
-                            payment: this.bookingData.payment,
-                            date: this.bookingData.date,
-                            seatLength: this.bookingData.seatLength,
-                            theater: this.bookingData.theater,
-                            movie: this.bookingData.movie,
-                            language: this.bookingData.language,
-                            city: this.bookingData.city,
-                            state: this.bookingData.state,
-                            seats: JSON.parse(localStorage.getItem('selectedSeats'))
-                        };
-
-
-
-                        try {
-                            // Create a userBookingData document within a collection named after the user's ID
-                            const userBookingCollectionRef = collection(db, `Bookings/${username}/userBookingData`);
-                            const userBookingDocRef = doc(userBookingCollectionRef);
-
-                            const userBookingDocSnapshot = await getDoc(userBookingDocRef);
-                            if (!userBookingDocSnapshot.exists()) {
-                                await setDoc(userBookingDocRef, bookingData);
-                                // ...
-                            }
-
-                            console.log('Booking data saved successfully!');
+                        const data = await response.json();
+                        if (data.success) {
                             swal.fire({
                                 title: 'Booking Data Saved Successfully',
+                                text: data.message,
                                 icon: 'success',
                             });
-
-                        } catch (error) {
+                        } else {
                             swal.fire({
                                 title: 'Error saving booking data',
-                                html: `<p>${error}</p>`,
+                                text: data.message,
                                 icon: 'error',
                             });
                         }
-                    } else {
-                        // User is not logged in, prompt them to log in
-                        swal.fire({
-                            title: 'User is not logged in',
-                            html: 'Please log in to store the booking data.',
-                            icon: 'warning'
-                        });
+                    } else if (this.isFirebase && (this.status === 'succeeded')) {
+                        const db = getFirestore(); // Access the Firestore instance
+
+                        if (username) {
+                            console.log(this.bookingData.theater.type);
+                            // Construct the booking data object
+                            const bookingData = {
+                                token: localStorage.getItem('token'),
+                                // date: this.bookingData.date,
+                                payment: this.bookingData.payment,
+                                date: this.bookingData.date,
+                                seatLength: this.bookingData.seatLength,
+                                theater: this.bookingData.theater,
+                                movie: this.bookingData.movie,
+                                language: this.bookingData.language,
+                                city: this.bookingData.city,
+                                state: this.bookingData.state,
+                                seats: JSON.parse(localStorage.getItem('selectedSeats'))
+                            };
+
+
+
+                            try {
+                                // Create a userBookingData document within a collection named after the user's ID
+                                const userBookingCollectionRef = collection(db, `Bookings/${username}/userBookingData`);
+                                const userBookingDocRef = doc(userBookingCollectionRef);
+
+                                const userBookingDocSnapshot = await getDoc(userBookingDocRef);
+                                if (!userBookingDocSnapshot.exists()) {
+                                    await setDoc(userBookingDocRef, bookingData);
+                                    // ...
+                                }
+
+                                console.log('Booking data saved successfully!');
+                                swal.fire({
+                                    title: 'Booking Data Saved Successfully',
+                                    icon: 'success',
+                                });
+
+                            } catch (error) {
+                                swal.fire({
+                                    title: 'Error saving booking data',
+                                    html: `<p>${error}</p>`,
+                                    icon: 'error',
+                                });
+                            }
+                        } else {
+                            // User is not logged in, prompt them to log in
+                            swal.fire({
+                                title: 'User is not logged in',
+                                html: 'Please log in to store the booking data.',
+                                icon: 'warning'
+                            });
+                        }
                     }
-                }
+                }, 1000);
             } catch (error) {
                 console.log("Error: ", error);
                 swal.fire({
@@ -282,10 +316,15 @@ export default {
     mounted() {
         console.log("Component mounted")
         this.storeBookingData()
+        this.fetchPaymentInfo()
         setTimeout(() => {
             this.isButtonDisabled = false;
         }, 3000);
     },
+    unmounted() {
+        console.log("SuccessPage unmounted");
+        this.deleteBookingData();
+    }
 };
 </script>
   
