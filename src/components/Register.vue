@@ -147,7 +147,7 @@ onMounted(() => {
 
 const handleSubmit = () => {
   if (username.value !== '' && email.value !== '' && password.value !== '' && confirmPassword.value !== '' && password.value === confirmPassword.value) {
-    fetch("http://localhost:5173/register", {
+    fetch("https://bookmyshow-database.onrender.com/register", {
       method: "POST",
       crossDomain: true,
       headers: {

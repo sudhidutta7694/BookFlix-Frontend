@@ -112,7 +112,7 @@ export default {
       try {
         if (!this.isFirebase) {
           const username = localStorage.getItem("user");
-          const response = await fetch(`http://localhost:5173/bookings/${username}`);
+          const response = await fetch(`https://bookmyshow-database.onrender.com/${username}`);
           const data = await response.json();
           if (data.success) {
             this.bookingData = data.bookings;

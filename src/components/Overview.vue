@@ -184,7 +184,7 @@ export default {
       }
 
       try {
-        const response = await fetch('http://localhost:5173/toggle-favorite', {
+        const response = await fetch('https://bookmyshow-database.onrender.com/toggle-favorite', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -218,7 +218,7 @@ export default {
     // Handle authentication state changes
     async function fetchFavoriteMovies() {
       try {
-        const response = await fetch(`http://localhost:5173/get-favorite-movies/${username}`);
+        const response = await fetch(`https://bookmyshow-database.onrender.com/get-favorite-movies/${username}`);
         const data = await response.json();
         if (data.success) {
           console.log(data.favoriteMovies);

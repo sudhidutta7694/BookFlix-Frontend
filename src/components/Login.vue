@@ -174,7 +174,7 @@ export default {
 
     const verifyOTP = async () => {
       try {
-        const response = await fetch('http://localhost:5173/verify-otp', {
+        const response = await fetch('https://bookmyshow-database.onrender.com/verify-otp', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -213,7 +213,7 @@ export default {
     const resetPassword = async () => {
       try {
         if (newPassword.value == confirmNewPassword.value) {
-          const response = await fetch('http://localhost:5173/reset-password', {
+          const response = await fetch('https://bookmyshow-database.onrender.com/reset-password', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -256,7 +256,7 @@ export default {
     };
     const sendResetLink = async () => {
       try {
-        const response = await fetch('http://localhost:5173/forgot-password', {
+        const response = await fetch('https://bookmyshow-database.onrender.com/forgot-password', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -333,7 +333,7 @@ export default {
     });
 
     const handleLogin = () => {
-      fetch("http://localhost:5173/login", {
+      fetch("https://bookmyshow-database.onrender.com/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

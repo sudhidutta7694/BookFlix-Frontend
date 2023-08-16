@@ -223,7 +223,7 @@ export default {
             try {
                 setTimeout(async () => {
                     if (!this.isFirebase && (this.status === 'succeeded')) {
-                        const response = await fetch('http://localhost:5173/bookings', {
+                        const response = await fetch('https://bookmyshow-database.onrender.com/bookings', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',

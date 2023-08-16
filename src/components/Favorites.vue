@@ -53,7 +53,7 @@ export default {
         async function fetchFavoriteMovies(username) {
             try {
                 if (!isFirebase.value) {
-                    const response = await fetch(`http://localhost:5173/get-favorite-movies/${username}`);
+                    const response = await fetch(`https://bookmyshow-database.onrender.com/get-favorite-movies/${username}`);
                     const data = await response.json();
                     if (data.success) {
                         console.log(data.favoriteMovies);

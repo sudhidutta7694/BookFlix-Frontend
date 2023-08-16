@@ -215,7 +215,7 @@ onMounted(() => {
 })
 
 const handlePayment = () => {
-    fetch('/create-checkout-session', {
+    fetch('https://bookmyshow-database.onrender.com/create-checkout-session', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -334,7 +334,7 @@ const db = getFirestore(); // Get the Firestore instance
 
 async function fetchData() {
     try {
-        const response = await fetch(`http://localhost:5173/bookings/`);
+        const response = await fetch(`https://bookmyshow-database.onrender.com/bookings/`);
         const data = await response.json();
         if (data.success) {
             // this.bookingData = data.bookings;
