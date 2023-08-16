@@ -77,7 +77,7 @@ export default {
       return formattedSeats.join(', ');
     },
     async generateAndDownloadInvoice(booking) {
-      const pdfBlob = await fetch('http://localhost:5173/generate-pdf', {
+      const pdfBlob = await fetch('https://bookmyshow-database.onrender.com/generate-pdf', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
