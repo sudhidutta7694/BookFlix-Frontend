@@ -94,7 +94,7 @@ export default {
         },
         async sendEmailWithPDF(email) {
             try {
-                const response = await fetch('/send-email', {
+                const response = await fetch('https://bookmyshow-database.onrender.com/send-email', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
