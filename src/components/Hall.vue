@@ -239,7 +239,7 @@ const handlePayment = () => {
     }).then(({ url, id, session }) => {
         // window.open(url, '_blank');
         // console.log(selectedSeats.value)
-        const stripedUrl = url.replace('http://localhost:3000.app', '');
+        const stripedUrl = url.replace('https://book-my-show-clone-frontend.vercel.app/', '');
 
         // Navigate to the modified Stripe Checkout URL
         localStorage.setItem('date', JSON.stringify(props.date));

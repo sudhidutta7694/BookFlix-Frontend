@@ -74,7 +74,7 @@ export default {
     methods: {
         async fetchPaymentInfo() {
             try {
-                const response = await fetch('http://localhost:8080/payment'); // Replace with your backend API endpoint
+                const response = await fetch('https://bookflix-stripe-server.onrender.com/payment'); // Replace with your backend API endpoint
                 const data = await response.json();
                 console.log("The PaymentData is: " + JSON.stringify(data));
                 this.status = data.status;
