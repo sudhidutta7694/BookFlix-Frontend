@@ -94,8 +94,20 @@ export default {
         },
         async sendEmailWithPDF(email) {
             try {
-                const response = await axios.post('/send-email', {email});
-                console.log('Email sent:', response.data);
+                const response = await fetch('/send-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email }),
+                });
+
+                if (response.ok) {
+                    const responseData = await response.json();
+                    console.log('Email sent:', responseData);
+                } else {
+                    console.error('Error sending email:', response.statusText);
+                }
             } catch (error) {
                 console.error('Error sending email:', error);
             }
