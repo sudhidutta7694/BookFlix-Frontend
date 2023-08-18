@@ -253,7 +253,6 @@ const handlePayment = () => {
         localStorage.setItem('payment', JSON.stringify(payment.value));
         localStorage.setItem('token', JSON.stringify(generateToken()));
         console.log("The payment ID is: " + id + "\n\n" + session.id);
-        localStorage.setItem("id", session.id);
         setTimeout(() => {
             window.location.href = stripedUrl;
         }, 1000);

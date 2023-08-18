@@ -45,6 +45,7 @@
 </template>
   
 <script>
+// import axios from "axios";
 import swal from 'sweetalert2';
 // import { onMounted } from 'vue';
 // import { db } from '@/firebase'
@@ -76,15 +77,13 @@ export default {
                 const response = await fetch('https://bookflix-stripe-server.onrender.com/payment'); // Replace with your backend API endpoint
                 const data = await response.json();
                 console.log("The PaymentData is: " + JSON.stringify(data));
-                this.status = data.id === localStorage.getItem('id') ? 'succeeded' : 'failed';
-                setTimeout(()=> {
-                    if (this.status == 'succeeded') {
+                this.status = data.status;
+                if (data.status == 'succeeded') {
                     this.sendEmailWithPDF(data.receipt_email);
                 }
                 else {
                     console.log("The payment has not been received");
                 }
-                }, 2000)
                 // localStorage.setItem('paymentID', data.id);
                 // this.paymentInfo = data;
                 // this.error = null;
